@@ -1,4 +1,4 @@
-# Advent Of Code 2024
+# Advent Of Code 2025
 
 Advent of code challenges 2025, in GO.
 
