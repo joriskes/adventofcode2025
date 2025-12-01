@@ -16,7 +16,7 @@ import (
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Println("Advent of code 2024 usage:")
+		fmt.Println("Advent of code 2025 usage:")
 		fmt.Println("\ngo run main.go create <DAY_NUMBER>")
 		fmt.Println("Generates a new day using supplied number, copies template.go there and downloads the day input (if available)")
 		fmt.Println("\ngo run main.go run")
