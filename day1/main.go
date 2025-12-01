@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"log"
-	"math"
 	"os"
 	"strconv"
 	"time"
@@ -36,22 +35,25 @@ func main() {
 	for scanner.Scan() {
 		t := scanner.Text()
 		side := t[:1]
-		distStr := t[1:]
-		dist, err := strconv.Atoi(distStr)
+		dist, err := strconv.Atoi(t[1:])
 		if err != nil {
 			panic(err)
 		}
-		dist = int(math.Mod(float64(dist), 100.0))
 
-		if side == "L" {
-			dial = dial - dist
+		for i:=0; i<dist; i++ {
+			if side == "L" {
+				dial--
+			} else {
+				dial++
+			}
 			if dial < 0 {
 				dial = dial + 100
 			}
-		} else {
-			dial = dial + dist
 			if dial > 99 {
 				dial = dial - 100
+			}
+			if dial == 0 {
+				part2++
 			}
 		}
 		if dial == 0 {
