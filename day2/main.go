@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"log"
+	"math"
 	"os"
 	"strconv"
 	"strings"
@@ -12,14 +13,29 @@ import (
 
 const RUN_EXAMPLE = false
 
-func isValidId(id int) bool {
-	sId := strconv.Itoa(id);
+func isValidIdPart1(id int) bool {
+	sId := strconv.Itoa(id)
 	l := len(sId)
 	if l % 2 != 0 {
 		return true
 	}
 	l = l / 2
 	return sId[:l] != sId[l:]
+}
+
+func isValidIdPart2(id int) bool {
+	sId := strconv.Itoa(id)
+	l := len(sId)
+	for i := 1; i <= int(math.Ceil(float64(l / 2))); i++ {
+		expected := l / i
+		if l % i != 0 {
+			continue
+		}
+		if strings.Count(sId, sId[0:i]) == expected {
+			return false
+		}
+	}
+	return true
 }
 
 func main() {
@@ -51,8 +67,11 @@ func main() {
 		to, _ := strconv.Atoi(idRange[1])
 
 		for n := from; n <= to; n++ {
-			if !isValidId(n) {
+			if !isValidIdPart1(n) {
 				part1 += n
+			}
+			if !isValidIdPart2(n) {
+				part2 += n
 			}
 		}
 	}
