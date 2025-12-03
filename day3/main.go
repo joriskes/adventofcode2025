@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"log"
+	"math"
 	"os"
 	"strconv"
 	"strings"
@@ -11,6 +12,23 @@ import (
 )
 
 const RUN_EXAMPLE = false
+
+func getBiggestJoltage(values []int, numberOfBatteries int, indexToSearchFrom int) int  {
+	if numberOfBatteries == 0 {
+		return 0
+	}
+	biggestJoltage := 0
+	biggestIndex := 0
+
+	for i := indexToSearchFrom; i <= len(values)-numberOfBatteries; i++ {
+		if(values[i] > biggestJoltage) {
+			biggestJoltage = values[i]
+			biggestIndex = i
+		}
+	}
+	biggestJoltage = biggestJoltage * int(math.Pow(10,float64(numberOfBatteries - 1)))
+	return biggestJoltage + getBiggestJoltage(values, numberOfBatteries - 1, biggestIndex + 1)
+}
 
 func main() {
 	fmt.Println("====== Day 3 ======")
@@ -44,18 +62,8 @@ func main() {
 			}
 			values = append(values, v)
 		}
-
-		lineSum := 0
-		s:=0
-		for i := 0; i < len(values); i += 1 {
-			for j := i + 1; j < len(values); j += 1 {
-				s = (values[i] * 10) + values[j]
-				if lineSum < s {
-					lineSum = s
-				}
-			}
-		}
-		part1 += lineSum
+		part1 += getBiggestJoltage(values, 2, 0)
+		part2 += getBiggestJoltage(values, 12, 0)
 	}
 
 	fmt.Println("Part 1:", part1)
