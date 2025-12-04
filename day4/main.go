@@ -59,11 +59,25 @@ func main() {
 		grid = append(grid, rolls)
 	}
 
-	for y := 0; y < len(grid); y++ {
-		for x := 0; x < len(grid[y]); x++ {
-			if grid[y][x] == 1 && sumNeighbours(grid, x, y) < 4 {
-				part1++
+	first := true
+	toRemove := make([]struct{x int; y int}, 0)
+
+	for first || len(toRemove) > 0 {
+		toRemove = toRemove[:0]
+		for y := 0; y < len(grid); y++ {
+			for x := 0; x < len(grid[y]); x++ {
+				if grid[y][x] == 1 && sumNeighbours(grid, x, y) < 4 {
+					toRemove = append(toRemove, struct{x int; y int}{x, y})
+				}
 			}
+		}
+		if first {
+			part1 = len(toRemove)
+			first = false
+		}
+		part2 += len(toRemove)
+		for _, v := range toRemove {
+			grid[v.y][v.x] = 0
 		}
 	}
 
