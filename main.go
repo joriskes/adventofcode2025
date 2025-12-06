@@ -53,20 +53,25 @@ func run(day string) {
 	err := godotenv.Load()
 
 	cmd := exec.Command("go", "run", "main.go")
-	// Swap working directory before running
 	cmd.Dir = "day" + day
 
 	if day == "current" {
 		envDay := os.Getenv("AOC_DAY")
 		cmd.Dir = "day" + envDay
 	}
+
 	fmt.Println("Running " + cmd.Dir)
-	output, err := cmd.CombinedOutput()
+
+	// Pipe outputs directly to the parent process (terminal)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	// Use Run() instead of CombinedOutput()
+	err = cmd.Run()
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("Command finished with error:", err)
 		os.Exit(1)
 	}
-	fmt.Print(string(output))
 }
 
 func create(day string) {
