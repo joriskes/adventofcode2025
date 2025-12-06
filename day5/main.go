@@ -1,14 +1,15 @@
  package main
 
-import (
-	"bufio"
-	"fmt"
-	"log"
-	"os"
-	"strconv"
-	"strings"
-	"time"
-)
+ import (
+	 "bufio"
+	 "fmt"
+	 "log"
+	 "os"
+	 "sort"
+	 "strconv"
+	 "strings"
+	 "time"
+ )
 
 const RUN_EXAMPLE = false
 
@@ -59,6 +60,17 @@ func main() {
 			if isFresh(freshIngredients, ingredient) {
 				part1++
 			}
+		}
+	}
+
+	sort.Slice(freshIngredients, func(a, b int) bool { return freshIngredients[a].from < freshIngredients[b].from })
+
+	for i, v := range freshIngredients {
+		if i < len(freshIngredients)-1 &&  freshIngredients[i+1].from <= v.to {
+			freshIngredients[i+1].from = min(freshIngredients[i+1].from, v.from)
+			freshIngredients[i+1].to = max(freshIngredients[i+1].to, v.to)
+		} else {
+			part2 += v.to - v.from + 1
 		}
 	}
 
