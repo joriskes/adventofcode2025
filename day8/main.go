@@ -50,6 +50,31 @@ func findCircuit(circuits []circuit, index int) int {
 	return -1
 }
 
+func processEdge(circuits []circuit, e edge) []circuit {
+	fromCI := findCircuit(circuits, e.from)
+	toCI := findCircuit(circuits, e.to)
+
+	if fromCI == -1 {
+		if toCI == -1 {
+			circuits = append(circuits, circuit{indexes: []int{e.from, e.to}})
+		} else {
+			circuits[toCI].indexes = append(circuits[toCI].indexes, e.from)
+		}
+	} else {
+		if toCI == -1 {
+			circuits[fromCI].indexes = append(circuits[fromCI].indexes, e.to)
+		} else {
+			if fromCI != toCI {
+				// Took me a while, but: merge circuits when a link between them is found
+				fci := circuits[fromCI].indexes
+				circuits[toCI].indexes = append(circuits[toCI].indexes, fci...)
+				circuits = append(circuits[:fromCI], circuits[fromCI+1:]...)
+			}
+		}
+	}
+	return circuits
+}
+
 func main() {
 	fmt.Println("====== Day 8 ======")
 	start := time.Now()
@@ -94,34 +119,11 @@ func main() {
 		todo = 10
 	}
 
+	processIndex := 0
 	for i := 0; i < todo; i++ {
-		e := edges[i]
-		//fmt.Println("Processing edge", points[e.from], "->", points[e.to])
-		fromCI := findCircuit(circuits, e.from)
-		toCI := findCircuit(circuits, e.to)
-
-		if fromCI == -1 {
-			if toCI == -1 {
-				circuits = append(circuits, circuit{indexes: []int{e.from, e.to}})
-			} else {
-				circuits[toCI].indexes = append(circuits[toCI].indexes, e.from)
-			}
-		} else {
-			if toCI == -1 {
-				circuits[fromCI].indexes = append(circuits[fromCI].indexes, e.to)
-			} else {
-				//fmt.Println("skipping edge, already in circuit")
-				if fromCI != toCI {
-					// Merge circuits
-					fci := circuits[fromCI].indexes
-					circuits[toCI].indexes = append(circuits[toCI].indexes, fci...)
-					circuits = append(circuits[:fromCI], circuits[fromCI+1:]...)
-				}
-			}
-		}
-		//fmt.Println(circuits)
+		circuits = processEdge(circuits, edges[processIndex])
+		processIndex++
 	}
-
 
 	sort.Slice(circuits, func(i, j int) bool {
 		return len(circuits[i].indexes) > len(circuits[j].indexes)
@@ -132,6 +134,12 @@ func main() {
 		part1 *= len(circuits[i].indexes)
 	}
 
+	// Took a reddit hint: it needs to be the moment ALL points are in the same circuit
+	for len(circuits) > 1 || len(circuits[0].indexes) < len(points) {
+		circuits = processEdge(circuits, edges[processIndex])
+		processIndex++
+	}
+	part2 = points[edges[processIndex-1].from].x * points[edges[processIndex-1].to].x
 
 	fmt.Println("Part 1:", part1)
 	fmt.Println("Part 2:", part2)
